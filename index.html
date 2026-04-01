@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shara7 – Rice Order</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0D0A06;--bg:#F7F3EC;--card:#FFFFFF;
+  --gold:#B8860B;--gold2:#D4A017;--gold3:#F0C040;
+  --forest:#1C4A2A;--forest2:#2D6B3E;--forest3:#4A9B5F;
+  --muted:#7A6A50;--border:#E2D9C8;--border2:#C8B896;
+  --shadow:rgba(13,10,6,0.12);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;
+  background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23B8860B' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.page{display:none;animation:slideUp .45s cubic-bezier(.22,1,.36,1)}
+.page.active{display:block}
+@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER */
+.site-header{position:relative;background:var(--forest);overflow:hidden;padding:0}
+.hbg{position:absolute;inset:0;z-index:1;
+  background:radial-gradient(ellipse 80% 120% at 20% -20%,rgba(184,134,11,.35) 0%,transparent 60%),
+  radial-gradient(ellipse 60% 80% at 80% 110%,rgba(212,160,23,.2) 0%,transparent 55%),
+  linear-gradient(160deg,#1C4A2A 0%,#0D2A16 100%)}
+.hbg::after{content:'';position:absolute;inset:0;opacity:.5;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E")}
+.hinner{position:relative;z-index:2;padding:34px 24px 28px;text-align:center}
+.logo-ring{display:inline-flex;align-items:center;justify-content:center;width:70px;height:70px;border-radius:50%;border:2px solid rgba(212,160,23,.5);background:rgba(184,134,11,.15);margin-bottom:14px;font-size:2rem;backdrop-filter:blur(4px)}
+.htitle{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,8vw,4.2rem);font-weight:700;color:var(--gold3);letter-spacing:.08em;line-height:1;text-shadow:0 4px 20px rgba(0,0,0,.5)}
+.hsub{font-size:.77rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:8px}
+.hornament{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px}
+.hornament span{height:1px;width:50px;background:linear-gradient(to right,transparent,rgba(212,160,23,.6))}
+.hornament span:last-child{background:linear-gradient(to left,transparent,rgba(212,160,23,.6))}
+.hornament i{color:var(--gold2);font-size:.55rem;font-style:normal}
+
+/* CONTACT STRIP */
+.cstrip{background:rgba(0,0,0,.28);border-top:1px solid rgba(212,160,23,.2);padding:10px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 22px;position:relative;z-index:2}
+.cstrip a{color:rgba(255,255,255,.72);font-size:.78rem;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:color .2s;background:rgba(212,160,23,.13);border:1px solid rgba(212,160,23,.25);border-radius:20px;padding:5px 13px}
+.cstrip a:hover{color:var(--gold3)}
+
+/* CONTAINER */
+.container{max-width:740px;margin:0 auto;padding:30px 18px 72px}
+
+/* STEPS */
+.steps{display:flex;align-items:center;justify-content:center;margin-bottom:30px}
+.step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:110px}
+.sdot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.83rem;font-weight:600;border:2px solid var(--border2);background:var(--card);color:var(--muted);transition:all .3s}
+.step.active .sdot{background:var(--forest);color:#fff;border-color:var(--forest);box-shadow:0 4px 14px rgba(28,74,42,.35)}
+.step.done .sdot{background:var(--gold);color:#fff;border-color:var(--gold)}
+.slabel{font-size:.7rem;color:var(--muted);font-weight:500;letter-spacing:.04em}
+.step.active .slabel{color:var(--forest);font-weight:600}
+.sline{flex:1;height:2px;background:var(--border);margin-bottom:20px;max-width:55px;transition:background .3s}
+.sline.done{background:var(--gold)}
+
+/* CARD */
+.card{background:var(--card);border-radius:20px;padding:26px 26px 22px;margin-bottom:20px;border:1px solid var(--border);box-shadow:0 2px 16px var(--shadow);transition:box-shadow .2s}
+.card:hover{box-shadow:0 6px 28px var(--shadow)}
+.chead{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.cicon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--forest),var(--forest2));display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;box-shadow:0 4px 12px rgba(28,74,42,.3)}
+.ctitle{font-family:'Cormorant Garamond',serif;font-size:1.22rem;font-weight:700;color:var(--ink)}
+.csub{font-size:.77rem;color:var(--muted);margin-top:1px}
+
+/* FIELDS */
+.field{margin-bottom:17px}
+.field label{display:block;font-size:.74rem;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
+.field input,.field select{width:100%;padding:12px 15px;border:1.5px solid var(--border);border-radius:12px;font-family:'Outfit',sans-serif;font-size:.94rem;color:var(--ink);background:var(--bg);outline:none;transition:all .2s}
+.field input:focus,.field select:focus{border-color:var(--forest2);background:#fff;box-shadow:0 0 0 4px rgba(45,107,62,.1)}
+.field input.err{border-color:#C0392B}
+.errmsg{color:#C0392B;font-size:.74rem;margin-top:5px;display:none}
+.errmsg.show{display:block}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:500px){.frow{grid-template-columns:1fr}}
+
+/* PRICE TOGGLE */
+.ptoggle{width:100%;background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 60%,#C49A0A 100%);color:#fff;border:none;border-radius:14px;padding:16px 22px;font-family:'Cormorant Garamond',serif;font-size:1.12rem;font-weight:700;cursor:pointer;letter-spacing:.04em;display:flex;align-items:center;justify-content:space-between;box-shadow:0 6px 24px rgba(184,134,11,.4);transition:all .25s;position:relative;overflow:hidden}
+.ptoggle::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .2s}
+.ptoggle:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(184,134,11,.5)}
+.ptoggle:hover::before{opacity:1}
+.ptoggle .pleft{display:flex;align-items:center;gap:10px}
+.parrow{transition:transform .35s cubic-bezier(.34,1.56,.64,1);font-size:1.1rem}
+.ptoggle.open .parrow{transform:rotate(180deg)}
+.pbadge-small{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:2px 10px;font-family:'Outfit',sans-serif;font-size:.71rem;font-weight:600;letter-spacing:.06em}
+
+.ppanel{overflow:hidden;max-height:0;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .3s;opacity:0}
+.ppanel.open{max-height:600px;opacity:1}
+.ppanel-inner{background:var(--bg);border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;padding:4px 4px 0;margin-top:-4px}
+
+.ptbl{width:100%;border-collapse:collapse;font-size:.86rem}
+.ptbl thead tr{background:linear-gradient(135deg,var(--forest),var(--forest2))}
+.ptbl th{padding:11px 13px;text-align:left;color:rgba(255,255,255,.9);font-weight:600;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase}
+.ptbl th:not(:first-child){text-align:center}
+.ptbl td{padding:10px 13px;border-bottom:1px solid var(--border)}
+.ptbl td:not(:first-child){text-align:center}
+.ptbl tbody tr:hover{background:#FBF8F2}
+.ptbl tbody tr:last-child td{border-bottom:none}
+.pname{font-weight:500}
+.pbadge{display:inline-block;background:linear-gradient(135deg,var(--forest),var(--forest2));color:#fff;border-radius:7px;padding:3px 9px;font-size:.76rem;font-weight:600}
+.pnote{font-size:.72rem;color:var(--muted);padding:10px 13px 12px;font-style:italic}
+
+/* ORDER ROWS */
+.orow{display:grid;grid-template-columns:1fr 160px 90px 36px;gap:10px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px;transition:box-shadow .2s;animation:slideUp .25s ease}
+.orow:hover{box-shadow:0 4px 16px var(--shadow)}
+.orow select,.orow input{border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:'Outfit',sans-serif;font-size:.9rem;color:var(--ink);background:#fff;outline:none;transition:border-color .2s;width:100%}
+.orow select:focus,.orow input:focus{border-color:var(--forest2)}
+.dbtn{background:none;border:none;cursor:pointer;color:#C0392B;font-size:1.2rem;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.dbtn:hover{background:#FDE8E8}
+.addrow{width:100%;border:2px dashed var(--border2);background:none;color:var(--gold);border-radius:12px;padding:12px;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.02em}
+.addrow:hover{background:rgba(184,134,11,.07);border-color:var(--gold)}
+@media(max-width:540px){.orow{grid-template-columns:1fr 1fr;}.orow .dbtn{grid-column:2;grid-row:1;justify-self:end}}
+
+/* CHECKOUT BTN */
+.checkout-btn{width:100%;border:none;border-radius:16px;padding:20px 28px;background:linear-gradient(135deg,var(--forest) 0%,var(--forest2) 60%,var(--forest3) 100%);color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.28rem;font-weight:700;letter-spacing:.06em;cursor:pointer;box-shadow:0 8px 32px rgba(28,74,42,.4);transition:all .28s;display:flex;align-items:center;justify-content:center;gap:12px;position:relative;overflow:hidden}
+.checkout-btn::after{content:'';position:absolute;top:-50%;left:-60%;width:40%;height:200%;background:rgba(255,255,255,.15);transform:skewX(-20deg);transition:left .5s ease}
+.checkout-btn:hover::after{left:120%}
+.checkout-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(28,74,42,.5)}
+
+/* PAGE 2 */
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1.5px solid var(--border);color:var(--muted);border-radius:10px;padding:9px 16px;font-family:'Outfit',sans-serif;font-size:.86rem;cursor:pointer;margin-bottom:22px;transition:all .2s}
+.back-btn:hover{border-color:var(--forest2);color:var(--forest)}
+.ohero{background:linear-gradient(135deg,var(--forest) 0%,var(--forest2) 100%);border-radius:20px;padding:26px 26px 22px;margin-bottom:20px;position:relative;overflow:hidden}
+.ohero::before{content:'';position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;background:rgba(212,160,23,.15)}
+.ohtitle{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:700;color:var(--gold3);margin-bottom:16px;position:relative;z-index:1}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:relative;z-index:1}
+@media(max-width:460px){.cgrid{grid-template-columns:1fr}}
+.citem label{font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);display:block;margin-bottom:3px}
+.citem span{font-size:.92rem;color:#fff;font-weight:500}
+.stbl{width:100%;border-collapse:collapse;font-size:.9rem}
+.stbl thead tr{background:linear-gradient(135deg,var(--forest),var(--forest2))}
+.stbl th{padding:12px 13px;color:rgba(255,255,255,.9);font-weight:600;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;text-align:left}
+.stbl th:not(:first-child):not(:nth-child(2)){text-align:right}
+.stbl th:nth-child(2){text-align:center}
+.stbl td{padding:12px 13px;border-bottom:1px solid var(--border)}
+.stbl td:not(:first-child):not(:nth-child(2)){text-align:right}
+.stbl td:nth-child(2){text-align:center}
+.stbl tbody tr:nth-child(even){background:#FAFAF6}
+.stbl tbody tr:hover{background:#F5F0E8}
+.gtr{background:linear-gradient(135deg,var(--gold),var(--gold2))!important}
+.gtr td{color:#fff!important;font-weight:700;font-size:1rem;border:none!important}
+.arow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+@media(max-width:460px){.arow{grid-template-columns:1fr}}
+.copybtn{background:var(--card);border:1.5px solid var(--gold);color:var(--gold);border-radius:13px;padding:14px 18px;font-family:'Outfit',sans-serif;font-size:.92rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.copybtn:hover{background:#FFFBF0;box-shadow:0 4px 16px rgba(184,134,11,.2)}
+.submitbtn{background:linear-gradient(135deg,var(--ink) 0%,#3D2B10 100%);color:#fff;border:none;border-radius:13px;padding:14px 18px;font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.04em;box-shadow:0 6px 20px rgba(13,10,6,.35);transition:all .25s}
+.submitbtn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(13,10,6,.45)}
+
+/* SUCCESS */
+.swrap{background:var(--card);border-radius:24px;padding:50px 30px 42px;text-align:center;border:1px solid var(--border);box-shadow:0 8px 48px var(--shadow);margin-top:16px}
+.sring{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--forest),var(--forest3));display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:2.4rem;box-shadow:0 8px 28px rgba(28,74,42,.4);animation:popIn .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.stitle{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--forest);margin-bottom:12px}
+.smsg{color:var(--muted);font-size:.93rem;line-height:1.7;max-width:400px;margin:0 auto}
+.ccard{background:linear-gradient(135deg,var(--forest),var(--forest2));border-radius:16px;padding:22px;margin-top:26px;text-align:left}
+.ccard h3{font-family:'Cormorant Garamond',serif;color:var(--gold3);font-size:1.08rem;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.clist{display:flex;flex-direction:column;gap:9px}
+.clink{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border-radius:10px;padding:11px 14px;text-decoration:none;color:#fff;transition:background .2s}
+.clink:hover{background:rgba(255,255,255,.15)}
+.clink .cion{width:34px;height:34px;border-radius:8px;background:rgba(212,160,23,.25);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.clink .cinfo label{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);display:block}
+.clink .cinfo span{font-size:.92rem;font-weight:500}
+.neword{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;border:none;border-radius:14px;padding:14px 34px;font-family:'Outfit',sans-serif;font-size:.96rem;font-weight:600;cursor:pointer;margin-top:26px;box-shadow:0 6px 20px rgba(184,134,11,.4);transition:all .22s}
+.neword:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(184,134,11,.5)}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--forest);color:#fff;padding:13px 26px;border-radius:50px;font-size:.86rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:transform .38s cubic-bezier(.34,1.56,.64,1);z-index:1000;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.req{color:#C0392B}
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 -->
+<div class="page active" id="page1">
+  <header class="site-header">
+    <div class="hbg"></div>
+    <div class="hinner">
+      <div class="logo-ring">🌾</div>
+      <div class="htitle">Shara7</div>
+      <div class="hsub">Premium Rice Merchants</div>
+      <div class="hornament"><span></span><i>✦</i><span></span></div>
+    </div>
+    <div class="cstrip">
+      <a href="tel:0766220718">📞 076 622 0718</a>
+      <a href="tel:0766030119">📞 076 603 0119</a>
+      <a href="mailto:afathihas03@gmail.com">✉️ afathihas03@gmail.com</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="steps">
+      <div class="step active"><div class="sdot">1</div><div class="slabel">Details</div></div>
+      <div class="sline"></div>
+      <div class="step"><div class="sdot">2</div><div class="slabel">Review</div></div>
+      <div class="sline"></div>
+      <div class="step"><div class="sdot">3</div><div class="slabel">Done</div></div>
+    </div>
+
+    <!-- CUSTOMER DETAILS -->
+    <div class="card">
+      <div class="chead">
+        <div class="cicon">👤</div>
+        <div><div class="ctitle">Customer Details</div><div class="csub">Contact & delivery information</div></div>
+      </div>
+      <div class="frow">
+        <div class="field">
+          <label>Customer Name <span class="req">*</span></label>
+          <input type="text" id="fn" placeholder="Full name">
+          <div class="errmsg" id="en">Please enter your name.</div>
+        </div>
+        <div class="field">
+          <label>Shop Name <span class="req">*</span></label>
+          <input type="text" id="fs" placeholder="Business / shop name">
+          <div class="errmsg" id="es">Please enter your shop name.</div>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="field">
+          <label>Contact Number <span class="req">*</span></label>
+          <input type="tel" id="fp" placeholder="07XXXXXXXX" maxlength="10">
+          <div class="errmsg" id="ep">Enter a valid 10-digit number.</div>
+        </div>
+        <div class="field">
+          <label>Location <span class="req">*</span></label>
+          <input type="text" id="fl" placeholder="City / Area">
+          <div class="errmsg" id="el">Please enter your location.</div>
+        </div>
+      </div>
+      <div class="field" style="max-width:280px">
+        <label>Delivery Required By <span class="req">*</span></label>
+        <input type="date" id="fd">
+        <div class="errmsg" id="ed">Please select a date.</div>
+      </div>
+    </div>
+
+    <!-- PRICE CHART BUTTON -->
+    <div style="margin-bottom:20px">
+      <button class="ptoggle" id="ptoggle" onclick="togglePrice()">
+        <div class="pleft">
+          <span>📊</span>
+          <span>View Price Chart</span>
+          <span class="pbadge-small">7 Products</span>
+        </div>
+        <span class="parrow">▼</span>
+      </button>
+      <div class="ppanel" id="ppanel">
+        <div class="ppanel-inner">
+          <table class="ptbl">
+            <thead><tr><th>Product</th><th>5 kg</th><th>10 kg</th><th>25 kg</th></tr></thead>
+            <tbody>
+              <tr><td class="pname">Muthu Rice</td><td><span class="pbadge">1,100</span></td><td><span class="pbadge">2,200</span></td><td><span class="pbadge">5,500</span></td></tr>
+              <tr><td class="pname">Usual Rice</td><td><span class="pbadge">1,100</span></td><td><span class="pbadge">2,200</span></td><td><span class="pbadge">5,500</span></td></tr>
+              <tr><td class="pname">Ponny Rice</td><td><span class="pbadge">1,100</span></td><td><span class="pbadge">2,200</span></td><td><span class="pbadge">5,500</span></td></tr>
+              <tr><td class="pname">Red Rice</td><td><span class="pbadge">1,100</span></td><td><span class="pbadge">2,200</span></td><td><span class="pbadge">5,500</span></td></tr>
+              <tr><td class="pname">White Raw Rice</td><td><span class="pbadge">1,000</span></td><td><span class="pbadge">2,000</span></td><td><span class="pbadge">5,000</span></td></tr>
+              <tr><td class="pname">Red Raw Rice</td><td><span class="pbadge">1,000</span></td><td><span class="pbadge">2,000</span></td><td><span class="pbadge">5,000</span></td></tr>
+              <tr><td class="pname">Amul Samba</td><td style="text-align:center;color:#bbb">—</td><td style="text-align:center;color:#bbb">—</td><td><span class="pbadge">6,500 (26kg)</span></td></tr>
+            </tbody>
+          </table>
+          <div class="pnote">* All prices in Sri Lankan Rupees (LKR). Whole sale prices only.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER ITEMS -->
+    <div class="card">
+      <div class="chead">
+        <div class="cicon">🛒</div>
+        <div><div class="ctitle">Your Order</div><div class="csub">Select products and quantities</div></div>
+      </div>
+      <div id="orows"></div>
+      <button class="addrow" onclick="addRow()">＋ Add Another Product</button>
+      <div class="errmsg" id="eo" style="margin-top:10px"></div>
+    </div>
+
+    <button class="checkout-btn" onclick="goCheckout()">Proceed to Checkout →</button>
+  </div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="page2">
+  <header class="site-header">
+    <div class="hbg"></div>
+    <div class="hinner">
+      <div class="logo-ring">🌾</div>
+      <div class="htitle">Shara7</div>
+      <div class="hsub">Order Review</div>
+      <div class="hornament"><span></span><i>✦</i><span></span></div>
+    </div>
+    <div class="cstrip">
+      <a href="tel:0766220718">📞 076 622 0718</a>
+      <a href="tel:0766030119">📞 076 603 0119</a>
+      <a href="mailto:afathihas03@gmail.com">✉️ afathihas03@gmail.com</a>
+    </div>
+  </header>
+  <div class="container">
+    <div class="steps">
+      <div class="step done"><div class="sdot">✓</div><div class="slabel">Details</div></div>
+      <div class="sline done"></div>
+      <div class="step active"><div class="sdot">2</div><div class="slabel">Review</div></div>
+      <div class="sline"></div>
+      <div class="step"><div class="sdot">3</div><div class="slabel">Done</div></div>
+    </div>
+    <button class="back-btn" onclick="goBack()">← Edit Order</button>
+    <div class="ohero">
+      <div class="ohtitle">📋 Order Summary</div>
+      <div class="cgrid" id="csummary"></div>
+    </div>
+    <div class="card">
+      <div class="chead">
+        <div class="cicon" style="background:linear-gradient(135deg,var(--gold),var(--gold2))">📦</div>
+        <div><div class="ctitle">Order Items</div><div class="csub">Verify before submitting</div></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="stbl" id="stbl"></table>
+      </div>
+    </div>
+    <div class="arow">
+      <button class="copybtn" onclick="copyOrder()">📋 Copy Details</button>
+      <button class="submitbtn" onclick="submitOrder()">✉️ Submit Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" id="page3">
+  <header class="site-header">
+    <div class="hbg"></div>
+    <div class="hinner">
+      <div class="logo-ring">🌾</div>
+      <div class="htitle">Shara7</div>
+      <div class="hsub">Order Confirmed</div>
+      <div class="hornament"><span></span><i>✦</i><span></span></div>
+    </div>
+    <div class="cstrip">
+      <a href="tel:0766220718">📞 076 622 0718</a>
+      <a href="tel:0763515790">📞 076 603 0119</a>
+      <a href="mailto:afathihas03@gmail.com">✉️ afathihas03@gmail.com</a>
+    </div>
+  </header>
+  <div class="container">
+    <div class="steps">
+      <div class="step done"><div class="sdot">✓</div><div class="slabel">Details</div></div>
+      <div class="sline done"></div>
+      <div class="step done"><div class="sdot">✓</div><div class="slabel">Review</div></div>
+      <div class="sline done"></div>
+      <div class="step active"><div class="sdot">✓</div><div class="slabel">Done</div></div>
+    </div>
+    <div class="swrap">
+      <div class="sring">✓</div>
+      <div class="stitle">Order Received!</div>
+      <p class="smsg">Thank you for choosing Shara7. Your order has been submitted and we'll confirm it shortly via your contact details.</p>
+      <div class="ccard">
+        <h3>📞 Reach Us Anytime</h3>
+        <div class="clist">
+          <a href="tel:0766220718" class="clink">
+            <div class="cion">📱</div>
+            <div class="cinfo"><label>Mobile</label><span>076 622 0718</span></div>
+          </a>
+          <a href="tel:0763515790" class="clink">
+            <div class="cion">📱</div>
+            <div class="cinfo"><label>Mobile</label><span>076 603 0119</span></div>
+          </a>
+          <a href="mailto:afathihas03@gmail.com" class="clink">
+            <div class="cion">✉️</div>
+            <div class="cinfo"><label>Email</label><span>afathihas03@gmail.com</span></div>
+          </a>
+        </div>
+      </div>
+      <button class="neword" onclick="newOrder()">+ Place Another Order</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PRODS=[
+  {name:"Muthu Rice",     p:{"5kg":1100,"10kg":2200,"25kg":5500}},
+  {name:"Usual Rice",     p:{"5kg":1100,"10kg":2200,"25kg":5500}},
+  {name:"Ponny Rice",     p:{"5kg":1100,"10kg":2200,"25kg":5500}},
+  {name:"Red Rice",       p:{"5kg":1100,"10kg":2200,"25kg":5500}},
+  {name:"White Raw Rice", p:{"5kg":1000,"10kg":2000,"25kg":5000}},
+  {name:"Red Raw Rice",   p:{"5kg":1000,"10kg":2000,"25kg":5000}},
+  {name:"Amul Samba",     p:{"26kg":6500}},
+];
+let rid=0;
+
+function addRow(){
+  rid++;const id=rid;
+  const el=document.createElement('div');
+  el.className='orow';el.id='row-'+id;
+  el.innerHTML=`
+    <select id="rp-${id}" onchange="onProd(${id})">
+      <option value="">Select Product…</option>
+      ${PRODS.map(p=>`<option value="${p.name}">${p.name}</option>`).join('')}
+    </select>
+    <select id="rs-${id}" style="display:none" onchange="onSize(${id})">
+      <option value="">Size…</option>
+    </select>
+    <input type="number" id="rq-${id}" min="1" placeholder="Qty" style="display:none">
+    <button class="dbtn" onclick="delRow(${id})">✕</button>
+  `;
+  document.getElementById('orows').appendChild(el);
+}
+
+function onProd(id){
+  const v=document.getElementById('rp-'+id).value;
+  const ss=document.getElementById('rs-'+id);
+  const qi=document.getElementById('rq-'+id);
+  if(!v){ss.style.display='none';qi.style.display='none';return;}
+  const prod=PRODS.find(p=>p.name===v);
+  ss.innerHTML='<option value="">Size…</option>'+Object.keys(prod.p).map(s=>`<option value="${s}">${s} — Rs.${prod.p[s].toLocaleString()}</option>`).join('');
+  ss.style.display='';qi.style.display='none';
+  ss.onchange=()=>onSize(id);
+}
+
+function onSize(id){
+  const s=document.getElementById('rs-'+id).value;
+  document.getElementById('rq-'+id).style.display=s?'':'none';
+}
+
+function delRow(id){const e=document.getElementById('row-'+id);if(e)e.remove();}
+
+addRow();
+
+function togglePrice(){
+  document.getElementById('ptoggle').classList.toggle('open');
+  document.getElementById('ppanel').classList.toggle('open');
+}
+
+function vchk(fid,cond,eid){
+  const f=document.getElementById(fid),e=document.getElementById(eid);
+  if(!cond){f.classList.add('err');e.classList.add('show');return false;}
+  f.classList.remove('err');e.classList.remove('show');return true;
+}
+
+function validate(){
+  let ok=true;
+  if(!vchk('fn',document.getElementById('fn').value.trim(),'en'))ok=false;
+  if(!vchk('fs',document.getElementById('fs').value.trim(),'es'))ok=false;
+  if(!vchk('fp',/^\d{10}$/.test(document.getElementById('fp').value.trim()),'ep'))ok=false;
+  if(!vchk('fl',document.getElementById('fl').value.trim(),'el'))ok=false;
+  if(!vchk('fd',document.getElementById('fd').value,'ed'))ok=false;
+  const items=getItems();
+  const oe=document.getElementById('eo');
+  if(!items.length){oe.textContent='Please add at least one complete product.';oe.classList.add('show');ok=false;}
+  else oe.classList.remove('show');
+  return ok;
+}
+
+function getItems(){
+  const rows=document.querySelectorAll('#orows .orow');
+  const out=[];
+  rows.forEach(row=>{
+    const id=row.id.replace('row-','');
+    const pr=document.getElementById('rp-'+id)?.value;
+    const sz=document.getElementById('rs-'+id)?.value;
+    const qt=parseInt(document.getElementById('rq-'+id)?.value||0);
+    if(pr&&sz&&qt>0){
+      const prod=PRODS.find(p=>p.name===pr);
+      const up=prod.p[sz]||0;
+      out.push({product:pr,size:sz,qty:qt,unit:up,total:up*qt});
+    }
+  });
+  return out;
+}
+
+function goCheckout(){
+  if(!validate()){showToast('⚠ Please complete all required fields.');return;}
+  const items=getItems();
+  const c={name:document.getElementById('fn').value.trim(),shop:document.getElementById('fs').value.trim(),phone:document.getElementById('fp').value.trim(),loc:document.getElementById('fl').value.trim(),date:document.getElementById('fd').value};
+  document.getElementById('csummary').innerHTML=`
+    <div class="citem"><label>Customer</label><span>${c.name}</span></div>
+    <div class="citem"><label>Shop</label><span>${c.shop}</span></div>
+    <div class="citem"><label>Contact</label><span>${c.phone}</span></div>
+    <div class="citem"><label>Location</label><span>${c.loc}</span></div>
+    <div class="citem"><label>Deliver By</label><span>${fmtDate(c.date)}</span></div>
+  `;
+  let grand=0;
+  let rows=`<thead><tr><th>#</th><th>Product</th><th>Size</th><th>Qty</th><th>Unit (Rs.)</th><th>Total (Rs.)</th></tr></thead><tbody>`;
+  items.forEach((it,i)=>{grand+=it.total;rows+=`<tr><td>${i+1}</td><td><strong>${it.product}</strong></td><td>${it.size}</td><td>${it.qty}</td><td>${it.unit.toLocaleString()}</td><td><strong>${it.total.toLocaleString()}</strong></td></tr>`;});
+  rows+=`</tbody><tfoot><tr class="gtr"><td colspan="5">🏷 Grand Total</td><td>Rs. ${grand.toLocaleString()}</td></tr></tfoot>`;
+  document.getElementById('stbl').innerHTML=rows;
+  window._od={c,items,grand};
+  showPage('page2');window.scrollTo(0,0);
+}
+
+function goBack(){showPage('page1');window.scrollTo(0,0);}
+
+function copyOrder(){
+  const d=window._od;if(!d)return;
+  let t='================================\n        SHARA7 RICE ORDER\n================================\n';
+  t+=`Customer  : ${d.c.name}\nShop      : ${d.c.shop}\nPhone     : ${d.c.phone}\nLocation  : ${d.c.loc}\nDeliver By: ${fmtDate(d.c.date)}\n--------------------------------\n`;
+  d.items.forEach((it,i)=>{t+=`${i+1}. ${it.product} (${it.size}) x${it.qty} = Rs.${it.total.toLocaleString()}\n`;});
+  t+=`================================\nGRAND TOTAL: Rs.${d.grand.toLocaleString()}\n================================\n📞 076 622 0718 | 076 351 5790\n✉ afathihas03@gmail.com\n`;
+  navigator.clipboard.writeText(t).then(()=>showToast('✓ Copied to clipboard!'));
+}
+
+function submitOrder(){
+  const d=window._od;if(!d)return;
+  let body=`SHARA7 ORDER SUBMISSION\n\nCustomer: ${d.c.name}\nShop: ${d.c.shop}\nContact: ${d.c.phone}\nLocation: ${d.c.loc}\nRequired By: ${fmtDate(d.c.date)}\n\nORDER:\n`;
+  d.items.forEach((it,i)=>{body+=`${i+1}. ${it.product} (${it.size}) x${it.qty} = Rs.${it.total.toLocaleString()}\n`;});
+  body+=`\nGRAND TOTAL: Rs.${d.grand.toLocaleString()}`;
+  const sub=encodeURIComponent(`Shara7 Order – ${d.c.name} (${d.c.shop})`);
+  window.location.href=`mailto:afathihas03@gmail.com?subject=${sub}&body=${encodeURIComponent(body)}`;
+  setTimeout(()=>{showPage('page3');window.scrollTo(0,0);},700);
+}
+
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function fmtDate(s){if(!s)return'';const d=new Date(s+'T00:00:00');return d.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function newOrder(){['fn','fs','fp','fl','fd'].forEach(id=>document.getElementById(id).value='');document.getElementById('orows').innerHTML='';rid=0;addRow();showPage('page1');window.scrollTo(0,0);}
+
+document.getElementById('fd').min=new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
